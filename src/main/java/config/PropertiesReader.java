@@ -1,4 +1,4 @@
-package conf;
+package config;
 
 
 import java.io.File;
@@ -6,7 +6,12 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
 
+import org.jboss.logging.Logger;
+
+
 public class PropertiesReader {
+	
+	private static final Logger LOGGER = Logger.getLogger( PropertiesReader.class.getName() );
 	
 	//SINGLETON
 	private static PropertiesReader _INSTANCE;
@@ -41,6 +46,8 @@ public class PropertiesReader {
 				String path = dir.toString();
 				arquivo = path + File.separator + "ad-auth-service.properties";
 			}
+			
+			LOGGER.info("Arquivo de propriedades: " + arquivo);
 			
 			File f = new File ( arquivo );
 			if (f.exists()){

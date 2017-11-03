@@ -18,7 +18,7 @@ public class AuthService {
 	
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response login( Map<String,String> payload ) {
+	public Response login( Map<String,String> payload ) throws Exception {
 		
 		String username = payload.get("username");
 		String password = payload.get("password");

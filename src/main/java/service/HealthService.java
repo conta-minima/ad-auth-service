@@ -8,7 +8,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-import conf.PropertiesReader;
+import config.PropertiesReader;
 
 
 @Path("/health")
