@@ -17,9 +17,9 @@ public class PropertiesReader {
 	private static PropertiesReader _INSTANCE;
 	
 	public static PropertiesReader getInstance() throws Exception {
-		if (_INSTANCE == null){
+		//if (_INSTANCE == null){
 			_INSTANCE = new PropertiesReader();
-		}
+		//}
 		return _INSTANCE;
 	}
 	
