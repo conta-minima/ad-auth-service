@@ -6,6 +6,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
 
+import javax.ws.rs.NotFoundException;
+
 import org.jboss.logging.Logger;
 
 
@@ -13,18 +15,15 @@ public class PropertiesReader {
 	
 	private static final Logger LOGGER = Logger.getLogger( PropertiesReader.class.getName() );
 	
-	//SINGLETON
+	//SINGLETON (currently not used)
 	private static PropertiesReader _INSTANCE;
 	
-	public static PropertiesReader getInstance() throws Exception {
-		//if (_INSTANCE == null){
-			_INSTANCE = new PropertiesReader();
-		//}
-		return _INSTANCE;
+	public static PropertiesReader getInstance() throws NotFoundException {
+			return new PropertiesReader();
 	}
 	
 	
-	private PropertiesReader() throws Exception {
+	private PropertiesReader() throws NotFoundException {
 		this.readProperties();
 	}
 	
@@ -34,20 +33,20 @@ public class PropertiesReader {
 		return this.properties;
 	}
 	
-	private void readProperties() throws Exception{
+	private void readProperties() throws NotFoundException{
 		try {
-			//busca o properties (se nao foi passado por parametro, le o diretorio corrente)
+			//search the properties location (from parameter or current directory)
 			
 			String arquivo = System.getProperty("properties.file");
 			if (arquivo == null) {
-				//diretorio atual
+				//current directory
 				File f = new File(System.getProperty("java.class.path"));
 				File dir = f.getAbsoluteFile().getParentFile();
 				String path = dir.toString();
 				arquivo = path + File.separator + "ad-auth-service.properties";
 			}
 			
-			LOGGER.info("Arquivo de propriedades: " + arquivo);
+			LOGGER.info("Properties File: " + arquivo);
 			
 			File f = new File ( arquivo );
 			if (f.exists()){
@@ -55,10 +54,10 @@ public class PropertiesReader {
 				properties.load(new FileInputStream(f));
 			}
 			else{
-				throw new Exception("Arquivo de propriedades não encontrado ["+f.getAbsolutePath()+"]");
+				throw new NotFoundException("Properties File NOT found ["+f.getAbsolutePath()+"]");
 			}
 		} catch (IOException e) {
-			throw new Exception("Erro ao ler arquivo de propriedades: ["+e.getMessage()+"]", e);
+			throw new NotFoundException("Error Reading Properties File: ["+e.getMessage()+"]", e);
 		}
 	}
 

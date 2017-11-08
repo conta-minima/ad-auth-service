@@ -13,6 +13,7 @@ import javax.naming.directory.DirContext;
 import javax.naming.directory.InitialDirContext;
 import javax.naming.directory.SearchControls;
 import javax.naming.directory.SearchResult;
+import javax.ws.rs.NotFoundException;
 
 import config.PropertiesReader;
 import dto.User;
@@ -32,7 +33,19 @@ public class AdRepostitory {
 	
 	private static final String AD_CTX_FACTORY = "com.sun.jndi.ldap.LdapCtxFactory";
 	
-	public User doLogin(String username, String password) throws Exception {
+	/**
+	 * Do a login challenge on the Active Directory <br>
+	 * The AD information must by properly configured in the properties file 
+	 * 
+	 * @param username  
+	 * 			{@link String} user name
+	 * @param password  
+	 * 			{@link String} user password
+	 * @return user data
+	 * @throws NamingException if an error was found on Active Directory
+	 * @throws NotFoundException if the properties file was not found
+	 */
+	public User doLogin(String username, String password) throws NamingException, NotFoundException  {
 		
 		Properties p = this.readProperties();
 		
@@ -50,16 +63,23 @@ public class AdRepostitory {
 		Attributes attrs = result.getAttributes();
 		
 		User user = new User();
-		user.setName( this.readAttribute( attrs.get("displayName") ) );
-		user.setEmail( this.readAttribute( attrs.get("mail") ) );
-		user.setUsername( this.readAttribute( attrs.get("sAMAccountName") ) );
+		user.setName( this.readAttribute( attrs.get(p.getProperty(NAME_ATTR)) ) );
+		user.setEmail( this.readAttribute( attrs.get(p.getProperty(MAIL_ATTR)) ) );
+		user.setUsername( this.readAttribute( attrs.get( p.getProperty(USER_ATTR) ) ) );
 		
 		return user;
 	}
 	
-	private String readAttribute( Attribute a ) {
+	/**
+	 * Read an attribute value from the AD Search Result
+	 * @param a 
+	 * 		 {@link String} the attribute bean
+	 * @return the attribute value
+	 * @throws NamingException if any error occurs from reading the value
+	 */
+	private String readAttribute( Attribute a ) throws NamingException {
 		if ( a != null ) {
-			return a.toString();
+			return a.get().toString();
 		}
 		return null;
 	}
@@ -107,7 +127,7 @@ public class AdRepostitory {
 		return new InitialDirContext(environment);
 	}
 	
-	private Properties readProperties() throws Exception {
+	private Properties readProperties() throws NotFoundException {
 		Properties p = PropertiesReader.getInstance().getProperties();
 		return p;
 	}
